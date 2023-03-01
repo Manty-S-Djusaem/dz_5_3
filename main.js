@@ -1,40 +1,46 @@
-const som = document.querySelector('#som')
-const usd = document.querySelector('#usd')
-const euro = document.querySelector('#euro')
+const block = document.querySelector('.block')
+const btnPrev = document.querySelector('.btn-prev')
+const btnNext = document.querySelector('.btn-next')
+let count = 1
 
-const convert = (elem, target1, target2 ,isTrue,) => {
-    elem.oninput = () => {
-        const request = new XMLHttpRequest()
-        request.open("GET", "data.json")
-        request.setRequestHeader("Content-type", "application/json")
-        request.send()
-        request.onload = () => {
-            const response = JSON.parse(request.response)
-
-            if (isTrue){
-                target1.value = ( elem.value / response.usd ).toFixed(2)
-                target2.value = ( elem.value / response.euro ).toFixed(2)
-            }
-            else {
-                target1.value = ( elem.value * response.usd ).toFixed(2)
-                target2.value = ( elem.value * response.euro ).toFixed(2)
-            }
-
-            elem.value === '' && (target1.value = '')
-            elem.value === '' && (target2.value = '')
-            // elem.value === '' ? target.value = '' : null
-        }
+const dannye = direction => {
+    if (direction === "next") {
+        count++
+    } else if (direction === "prev" && count > 1) {
+        count--
     }
-}
-function startTime() {
-    var today = new Date();
-    var hours = today.getHours();
-    var minutes = today.getMinutes();
-    var seconds = today.getSeconds();
-    document.getElementById('time').innerHTML =
-        hours + ":" + minutes + ":" + seconds;
-    var t = setTimeout(startTime, 1000);
-}
-startTime()
 
-convert(som, usd, euro, true)
+    fetch(`https://jsonplaceholder.typicode.com/todos/${count}`)
+        .then(response => response.json())
+        .then(data => {
+            const div = document.createElement('div')
+            div.setAttribute('class', 'card')
+            div.innerHTML = `
+                <h2>${data.title}</h2>
+                <span>${data.id}</span>
+                <h3>${data.completed}</h3>
+        `
+            block.innerHTML = ''
+            block.append(div)
+        })
+}
+
+btnNext.onclick = () => {
+    dannye("next")
+}
+
+btnPrev.onclick = () => {
+    dannye("prev")
+}
+
+// DZ-2
+
+    fetch('https://jsonplaceholder.typicode.com/posts', {
+    method: 'GET',
+    headers: {
+        'Content-type': 'application/json'
+    }
+}).then((response) => response.json()
+    ).then((data) => {
+    data.forEach(item => console.log(item))
+})
